@@ -83,38 +83,10 @@ public class GanttCSVExport {
     myCsvOptions = Preconditions.checkNotNull(csvOptions);
   }
 
-  private CSVFormat getCSVFormat() {
-    CSVFormat format = CSVFormat.DEFAULT.withEscape('\\');
-    if (myCsvOptions.sSeparatedChar.length() == 1) {
-      format = format.withDelimiter(myCsvOptions.sSeparatedChar.charAt(0));
-    }
-    if (myCsvOptions.sSeparatedTextChar.length() == 1) {
-      format = format.withQuote(myCsvOptions.sSeparatedTextChar.charAt(0));
-    }
 
-    return format;
-  }
 
   public SpreadsheetWriter createWriter(OutputStream stream, SpreadsheetFormat format) throws IOException {
-    format = Preconditions.checkNotNull(format);
-
-    switch (format) {
-      case CSV:
-        return getCsvWriter(stream);
-      case XLS:
-        return getXlsWriter(stream);
-      default:
-        throw new IllegalArgumentException("Unsupported format == " + format + "!");
-    }
-  }
-
-
-  private SpreadsheetWriter getCsvWriter(OutputStream stream) throws IOException {
-    return new CsvWriterImpl(stream, getCSVFormat(), myCsvOptions.getBomOption().getValue());
-  }
-
-  private SpreadsheetWriter getXlsWriter(OutputStream stream) {
-    return new XlsWriterImpl(stream);
+    return SpreadsheetWriterFactory.Companion.getSpreadsheetWriter(stream,format,myCsvOptions);
   }
 
   public void save(SpreadsheetWriter writer) throws IOException {

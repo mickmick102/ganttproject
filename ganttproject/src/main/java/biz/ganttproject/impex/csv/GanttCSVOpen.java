@@ -218,25 +218,7 @@ public class GanttCSVOpen {
   }
 
   private SpreadsheetReader createReader(InputStream is, List<String> headers) throws IOException {
-    switch (myFormat) {
-      case CSV:
-        return new CsvReaderImpl(is, createCSVFormat(headers));
-      case XLS:
-        return new XlsReaderImpl(is, headers);
-      default:
-        throw new IllegalArgumentException("Unsupported format: " + myFormat);
-    }
-  }
-
-  private CSVFormat createCSVFormat(List<String> headers) {
-    CSVFormat format = CSVFormat.DEFAULT.withIgnoreEmptyLines(false).withIgnoreSurroundingSpaces(true);
-    if (myCsvOptions != null) {
-      format = format.withDelimiter(myCsvOptions.sSeparatedChar.charAt(0)).withQuote(myCsvOptions.sSeparatedTextChar.charAt(0));
-    }
-    if (headers != null) {
-      format = format.withHeader(headers.toArray(new String[0]));
-    }
-    return format;
+    return SpreadsheetReaderFactory.Companion.getSpreadsheetReader(is, headers, myFormat, myCsvOptions);
   }
 
   private static SpreadsheetFormat createSpreadsheetFormat(File file) {

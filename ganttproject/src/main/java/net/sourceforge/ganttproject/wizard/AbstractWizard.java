@@ -35,6 +35,8 @@ public class AbstractWizard extends Wizard {
 
   public AbstractWizard(UIFacade uiFacade, String title, WizardPage firstPage) {
     super(uiFacade, title);
+    myDialog = myUIFacade.createDialog(myPagesContainer, new Action[] { myBackAction, myNextAction, myOkAction,
+      myCancelAction }, myTitle);
     myPagesContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     addPageComponent(firstPage);
     myPages.add(firstPage);

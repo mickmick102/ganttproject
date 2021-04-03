@@ -24,7 +24,7 @@ public abstract class Wizard {
   protected final AbstractAction myCancelAction;
   protected final UIFacade myUIFacade;
   protected final String myTitle;
-  protected final UIFacade.Dialog myDialog;
+  protected UIFacade.Dialog myDialog;
   protected int myCurrentPage;
 
   public Wizard(UIFacade uiFacade, String title) {
@@ -56,8 +56,6 @@ public abstract class Wizard {
         onOkPressed();
       }
     };
-    myDialog = myUIFacade.createDialog(myPagesContainer, new Action[] { myBackAction, myNextAction, myOkAction,
-      myCancelAction }, myTitle);
   }
 
   protected void nextPage() {

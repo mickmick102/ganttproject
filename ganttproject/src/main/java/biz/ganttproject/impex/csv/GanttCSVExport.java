@@ -18,13 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package biz.ganttproject.impex.csv;
 
-import biz.ganttproject.app.InternationalizationKt;
 import biz.ganttproject.core.model.task.TaskDefaultColumn;
 import biz.ganttproject.core.option.BooleanOption;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -44,10 +42,8 @@ import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskProperties;
 import net.sourceforge.ganttproject.util.ColorConvertion;
 import net.sourceforge.ganttproject.util.StringUtils;
-import org.apache.commons.csv.CSVFormat;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -59,11 +55,9 @@ import java.util.Set;
  *
  * @author athomas
  */
-public class GanttCSVExport {
-  private static final Predicate<ResourceAssignment> COORDINATOR_PREDICATE = arg -> arg.isCoordinator();
+public class GanttCSVExport extends CSVExport {
 
 
-  private CSVOptions myCsvOptions;
   private final TaskManager myTaskManager;
   private final CustomPropertyManager myTaskCustomPropertyManager;
   private final HumanResourceManager myHumanResourceManager;
@@ -75,20 +69,16 @@ public class GanttCSVExport {
   }
 
   GanttCSVExport(TaskManager taskManager, HumanResourceManager resourceManager, RoleManager roleManager, CSVOptions csvOptions) {
+    super(csvOptions);
     myTaskManager = Preconditions.checkNotNull(taskManager);
     myTaskCustomPropertyManager = Preconditions.checkNotNull(taskManager.getCustomPropertyManager());
     myHumanResourceManager = Preconditions.checkNotNull(resourceManager);
     myHumanResourceCustomPropertyManager = Preconditions.checkNotNull(resourceManager.getCustomPropertyManager());
     myRoleManager = Preconditions.checkNotNull(roleManager);
-    myCsvOptions = Preconditions.checkNotNull(csvOptions);
   }
 
 
-
-  public SpreadsheetWriter createWriter(OutputStream stream, SpreadsheetFormat format) throws IOException {
-    return SpreadsheetWriterFactory.Companion.getSpreadsheetWriter(stream,format,myCsvOptions);
-  }
-
+  @Override
   public void save(SpreadsheetWriter writer) throws IOException {
     writeTasks(writer);
 
@@ -120,10 +110,6 @@ public class GanttCSVExport {
     }
     writer.println();
     return defs;
-  }
-
-  private String i18n(String key) {
-    return InternationalizationKt.getRootLocalizer().formatText(key);
   }
 
   private void writeTasks(SpreadsheetWriter writer) throws IOException {
@@ -286,17 +272,6 @@ public class GanttCSVExport {
 
 
   /**
-   * @return the name of task with the correct level.
-   */
-  private String getName(Task task) {
-    if (myCsvOptions.bFixedSize) {
-      return task.getName();
-    }
-    int depth = task.getManager().getTaskHierarchy().getDepth(task) - 1;
-    return StringUtils.padLeft(task.getName(), depth * 2);
-  }
-
-  /**
    * @return the link of the task.
    */
   private String getWebLink(GanttTask task) {
@@ -311,8 +286,8 @@ public class GanttCSVExport {
     ResourceAssignment[] assignment = task.getAssignments();
     for (int i = 0; i < assignment.length; i++) {
       String assignmentDelimiter = i == assignment.length - 1
-              ? ""
-              : myCsvOptions.sSeparatedChar.equals(";") ? "," : ";";
+        ? ""
+        : myCsvOptions.sSeparatedChar.equals(";") ? "," : ";";
       res.append(assignment[i].getResource()).append(assignmentDelimiter);
     }
     return res.toString();
@@ -327,4 +302,14 @@ public class GanttCSVExport {
   }
 
 
+  /**
+   * @return the name of task with the correct level.
+   */
+  protected String getName(Task task) {
+    if (myCsvOptions.bFixedSize) {
+      return task.getName();
+    }
+    int depth = task.getManager().getTaskHierarchy().getDepth(task) - 1;
+    return StringUtils.padLeft(task.getName(), depth * 2);
+  }
 }

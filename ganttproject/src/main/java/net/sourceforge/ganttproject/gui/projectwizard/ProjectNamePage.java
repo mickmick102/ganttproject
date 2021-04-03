@@ -18,10 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.gui.projectwizard;
 
-import java.awt.Component;
-
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.options.ProjectSettingsPanel;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
+
+import javax.swing.*;
 
 public class ProjectNamePage implements WizardPage {
   private final I18N myI18N;
@@ -40,13 +42,13 @@ public class ProjectNamePage implements WizardPage {
   }
 
   @Override
-  public Component getComponent() {
+  public JComponent getComponent() {
     return myProjectSettingsPanel.getComponent();
   }
 
   @Override
-  public void setActive(boolean active) {
-    if (!active) {
+  public void setActive(Wizard wizard) {
+    if (wizard == null) {
       myProjectSettingsPanel.applyChanges(false);
     }
   }

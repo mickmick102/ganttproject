@@ -79,7 +79,7 @@ public abstract class AbstractFileChooserPage implements WizardPage {
   private final FileFilter myFileFilter;
   private final GPOptionGroup[] myOptions;
   private final String myTitle;
-  private AbstractWizard myWizard;
+  private Wizard myWizard;
 
   protected AbstractFileChooserPage(UIFacade uiFacade, Preferences prefs, String title, FileFilter fileFilter, GPOptionGroup[] options, boolean enableUrlChooser) {
     myUiFacade = uiFacade;
@@ -193,7 +193,7 @@ public abstract class AbstractFileChooserPage implements WizardPage {
   }
 
   @Override
-  public void setActive(AbstractWizard wizard) {
+  public void setActive(Wizard wizard) {
     GPOptionGroup[] optionGroups = getOptionGroups();
     myWizard = wizard;
     if (wizard == null) {
@@ -227,7 +227,7 @@ public abstract class AbstractFileChooserPage implements WizardPage {
     return myChooser;
   }
 
-  protected AbstractWizard getWizard() {
+  protected Wizard getWizard() {
     return myWizard;
   }
 

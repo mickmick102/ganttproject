@@ -24,8 +24,9 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.gui.options.GPOptionChoicePanel;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 import net.sourceforge.ganttproject.gui.projectwizard.WizardImpl;
-import net.sourceforge.ganttproject.gui.projectwizard.WizardPage;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
@@ -87,7 +88,7 @@ public abstract class FileChooserPageBase implements WizardPage {
   }
 
   @Override
-  public Component getComponent() {
+  public JComponent getComponent() {
     myComponent = new JPanel(new BorderLayout());
     myChooser = new TextFieldAndFileChooserComponent(myWizard.getUIFacade(), getFileChooserTitle()) {
       @Override
@@ -194,9 +195,9 @@ public abstract class FileChooserPageBase implements WizardPage {
   }
 
   @Override
-  public void setActive(boolean b) {
+  public void setActive(Wizard b) {
     GPOptionGroup[] optionGroups = getOptionGroups();
-    if (b == false) {
+    if (b == null) {
       for (int i = 0; i < optionGroups.length; i++) {
         optionGroups[i].commit();
       }

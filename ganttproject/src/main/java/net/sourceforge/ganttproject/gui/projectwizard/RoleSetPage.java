@@ -23,18 +23,13 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.AbstractListModel;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
+import javax.swing.*;
 
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleSet;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 
 public class RoleSetPage implements WizardPage {
   private final I18N myI18N;
@@ -52,7 +47,7 @@ public class RoleSetPage implements WizardPage {
   }
 
   @Override
-  public Component getComponent() {
+  public JComponent getComponent() {
     Box domainBox = new Box(BoxLayout.PAGE_AXIS);
     JLabel label = new JLabel(GanttLanguage.getInstance().getText("chooseRoleSets"));
 
@@ -148,6 +143,6 @@ public class RoleSetPage implements WizardPage {
   }
 
   @Override
-  public void setActive(boolean active) {
+  public void setActive(Wizard wizard) {
   }
 }

@@ -19,92 +19,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.gui.projectwizard;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Map;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import com.google.common.collect.Maps;
-
-import net.sourceforge.ganttproject.action.CancelAction;
-import net.sourceforge.ganttproject.action.GPAction;
-import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Centering;
 import net.sourceforge.ganttproject.gui.UIFacade.Dialog;
 import net.sourceforge.ganttproject.gui.options.TopPanel;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 
-public abstract class WizardImpl {
+public abstract class WizardImpl extends Wizard {
   protected final static GanttLanguage language = GanttLanguage.getInstance();
 
-  private final ArrayList<WizardPage> myPages = new ArrayList<WizardPage>();
-
-  private final Map<String, JComponent> myTitle2component = Maps.newHashMap();
-
-  private int myCurrentPage;
-
-  private final JPanel myPagesContainer;
-
-  private final CardLayout myCardLayout;
-
-  private final AbstractAction myNextAction;
-
-  private final AbstractAction myBackAction;
-
-  private final AbstractAction myOkAction;
-
-  private final AbstractAction myCancelAction;
-
-  private final UIFacade myUIFacade;
-
-  private final String myTitle;
-
-  private Dialog myDialog;
-
   public WizardImpl(UIFacade uiFacade, String title) {
-    // super(frame, title, true);
-    myUIFacade = uiFacade;
-    myTitle = title;
-    myCardLayout = new CardLayout();
-    myPagesContainer = new JPanel(myCardLayout);
-    myNextAction = new GPAction("next") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        WizardImpl.this.nextPage();
-      }
-    };
-    myBackAction = new GPAction("back") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        WizardImpl.this.backPage();
-      }
-    };
-    myOkAction = new OkAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        onOkPressed();
-      }
-    };
-    myCancelAction = new CancelAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        onCancelPressed();
-      }
-    };
+    super(uiFacade, title);
   }
 
   public void nextPage() {
     if (myCurrentPage < myPages.size() - 1) {
-      getCurrentPage().setActive(false);
+      getCurrentPage().setActive(null);
       myCurrentPage++;
-      getCurrentPage().setActive(true);
+      getCurrentPage().setActive(this);
       myCardLayout.next(myPagesContainer);
     }
     myDialog.center(Centering.WINDOW);
@@ -113,9 +52,9 @@ public abstract class WizardImpl {
 
   public void backPage() {
     if (myCurrentPage > 0) {
-      getCurrentPage().setActive(false);
+      getCurrentPage().setActive(null);
       myCurrentPage--;
-      getCurrentPage().setActive(true);
+      getCurrentPage().setActive(this);
       myCardLayout.previous(myPagesContainer);
     }
     myDialog.center(Centering.WINDOW);
@@ -128,11 +67,9 @@ public abstract class WizardImpl {
       addPageComponent(page, i);
     }
     myCardLayout.first(myPagesContainer);
-    getCurrentPage().setActive(true);
+    getCurrentPage().setActive(null);
     myPagesContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     adjustButtonState();
-    myDialog = myUIFacade.createDialog(myPagesContainer, new Action[] { myBackAction, myNextAction, myOkAction,
-        myCancelAction }, myTitle);
     myDialog.center(Centering.SCREEN);
     myDialog.show();
   }
@@ -177,12 +114,14 @@ public abstract class WizardImpl {
     myPages.remove(page);
   }
 
+  @Override
   protected void onOkPressed() {
-    getCurrentPage().setActive(false);
+    getCurrentPage().setActive(null);
   }
 
-  private void onCancelPressed() {
-    getCurrentPage().setActive(false);
+  @Override
+  protected void onCancelPressed() {
+    getCurrentPage().setActive(null);
   }
 
   private WizardPage getCurrentPage() {

@@ -44,5 +44,5 @@ public interface WizardPage {
    *
    * @param wizard wizard instance when page becomes active or null when it deactivates
    */
-  void setActive(AbstractWizard wizard);
+  void setActive(Wizard wizard);
 }

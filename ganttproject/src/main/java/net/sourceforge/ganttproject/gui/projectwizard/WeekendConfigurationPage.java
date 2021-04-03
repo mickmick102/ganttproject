@@ -36,6 +36,8 @@ import net.sourceforge.ganttproject.calendar.GPCalendarProvider;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -237,13 +239,13 @@ public class WeekendConfigurationPage implements WizardPage {
   }
 
   @Override
-  public Component getComponent() {
+  public JComponent getComponent() {
     return myPanel;
   }
 
   @Override
-  public void setActive(boolean active) {
-    if (!active) {
+  public void setActive(Wizard wizard) {
+    if (wizard == null) {
       myCalendarOption.commit();
       myRenderWeekendOption.commit();
     }

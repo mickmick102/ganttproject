@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import net.sourceforge.ganttproject.wizard.WizardPage;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.BooleanOption;
@@ -76,6 +77,12 @@ public class ExportFileWizardImpl extends WizardImpl {
   protected boolean canFinish() {
     return myState.getExporter() != null && myState.myUrl != null && "file".equals(myState.getUrl().getProtocol());
   }
+
+  @Override
+  public void setNextPage(WizardPage page) { }
+
+  @Override
+  public void setOkAction(Runnable action) { }
 
   @Override
   protected void onOkPressed() {

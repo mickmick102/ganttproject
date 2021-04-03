@@ -41,7 +41,7 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.calendar.CalendarEditorPanel;
 import net.sourceforge.ganttproject.importer.ImporterBase;
-import net.sourceforge.ganttproject.wizard.AbstractWizard;
+import net.sourceforge.ganttproject.wizard.Wizard;
 import net.sourceforge.ganttproject.wizard.WizardPage;
 
 import javax.swing.*;
@@ -129,7 +129,7 @@ public class IcsFileImporter extends ImporterBase {
       return myPanel;
     }
 
-    public void setActive(AbstractWizard wizard) {
+    public void setActive(Wizard wizard) {
       if (wizard != null) {
         myPanel.removeAll();
         if (myFile != null && myFile.exists() && myFile.canRead()) {

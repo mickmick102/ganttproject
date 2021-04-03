@@ -23,6 +23,7 @@ import biz.ganttproject.core.calendar.ImportCalendarOption;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.roles.RoleSet;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 
 public class NewProjectWizardWindow extends WizardImpl {
   private I18N myI18n;
@@ -61,6 +62,12 @@ public class NewProjectWizardWindow extends WizardImpl {
     super.onOkPressed();
     myProject.getActiveCalendar().importCalendar(myCalendar, new ImportCalendarOption(ImportCalendarOption.Values.REPLACE));
   }
+
+  @Override
+  public void setNextPage(WizardPage page) { }
+
+  @Override
+  public void setOkAction(Runnable action) { }
 
 
 }

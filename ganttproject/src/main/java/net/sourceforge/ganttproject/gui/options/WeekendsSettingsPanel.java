@@ -52,7 +52,7 @@ public class WeekendsSettingsPanel extends GeneralOptionPanel {
 
   @Override
   public boolean applyChanges(boolean askForApply) {
-    weekendConfigurationPanel.setActive(false);
+    weekendConfigurationPanel.setActive(null);
     GPCalendarCalc projectCalendar = project.getActiveCalendar();
     boolean hasChange = weekendConfigurationPanel.isChanged();
     for (int i = 1; !hasChange && i < 8; i++) {

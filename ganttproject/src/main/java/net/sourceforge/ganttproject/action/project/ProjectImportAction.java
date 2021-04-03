@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.importer.ImportFileWizardImpl;
-import net.sourceforge.ganttproject.wizard.AbstractWizard;
+import net.sourceforge.ganttproject.wizard.Wizard;
 
 import java.awt.event.ActionEvent;
 
@@ -46,7 +46,7 @@ public class ProjectImportAction extends GPAction {
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    AbstractWizard wizard = new ImportFileWizardImpl(myUIFacade, myProject, myProject.getGanttOptions());
+    Wizard wizard = new ImportFileWizardImpl(myUIFacade, myProject, myProject.getGanttOptions());
     wizard.show();
   }
 

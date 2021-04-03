@@ -18,19 +18,18 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sourceforge.ganttproject.export;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
 
 import biz.ganttproject.core.option.GPOptionGroup;
 
 import net.sourceforge.ganttproject.export.ExportFileWizardImpl.State;
 import net.sourceforge.ganttproject.gui.options.GPOptionChoicePanel;
-import net.sourceforge.ganttproject.gui.projectwizard.WizardPage;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.wizard.Wizard;
+import net.sourceforge.ganttproject.wizard.WizardPage;
 
 /**
  * @author bard
@@ -53,7 +52,7 @@ class ExporterChooserPage implements WizardPage {
   }
 
   @Override
-  public Component getComponent() {
+  public JComponent getComponent() {
     int selectedGroupIndex = 0;
     Action[] choiceChangeActions = new Action[myExporters.size()];
     GPOptionGroup[] choiceOptions = new GPOptionGroup[myExporters.size()];
@@ -80,8 +79,8 @@ class ExporterChooserPage implements WizardPage {
   }
 
   @Override
-  public void setActive(boolean b) {
-    if (false == b) {
+  public void setActive(Wizard b) {
+    if (b == null) {
       for (Exporter e : myExporters) {
         if (e.getOptions() != null) {
           e.getOptions().commit();

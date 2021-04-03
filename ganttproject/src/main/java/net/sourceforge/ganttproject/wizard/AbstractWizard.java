@@ -17,21 +17,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.wizard;
 
-import com.google.common.collect.Maps;
-import net.sourceforge.ganttproject.action.CancelAction;
-import net.sourceforge.ganttproject.action.GPAction;
-import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Centering;
-import net.sourceforge.ganttproject.gui.UIFacade.Dialog;
-import net.sourceforge.ganttproject.gui.options.TopPanel;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A wizard abstraction capable of managing wizard pages and showing them in the UI
@@ -39,60 +29,13 @@ import java.util.Map;
  *
  * @author dbarashev (Dmitry Barashev)
  */
-public class AbstractWizard {
-  private final ArrayList<WizardPage> myPages = new ArrayList<WizardPage>();
-
-  private final Map<String, JComponent> myTitle2component = Maps.newHashMap();
-
-  private int myCurrentPage;
-
-  private final JPanel myPagesContainer;
-
-  private final CardLayout myCardLayout;
-
-  private final AbstractAction myNextAction;
-
-  private final AbstractAction myBackAction;
-
-  private final AbstractAction myOkAction;
-
-  private final AbstractAction myCancelAction;
-
-  private final UIFacade myUIFacade;
-
-  private final String myTitle;
-
-  private final Dialog myDialog;
+public class AbstractWizard extends Wizard {
 
   private Runnable myOkRunnable;
 
   public AbstractWizard(UIFacade uiFacade, String title, WizardPage firstPage) {
-    myUIFacade = uiFacade;
-    myTitle = title;
-    myCardLayout = new CardLayout();
-    myPagesContainer = new JPanel(myCardLayout);
-    myNextAction = new GPAction("next") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        AbstractWizard.this.nextPage();
-      }
-    };
-    myBackAction = new GPAction("back") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        AbstractWizard.this.backPage();
-      }
-    };
-    myOkAction = new OkAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        onOkPressed();
-      }
-    };
-    myCancelAction = new CancelAction();
+    super(uiFacade, title);
     myPagesContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-    myDialog = myUIFacade.createDialog(myPagesContainer, new Action[] { myBackAction, myNextAction, myOkAction,
-        myCancelAction }, myTitle);
     addPageComponent(firstPage);
     myPages.add(firstPage);
     myDialog.layout();
@@ -100,67 +43,15 @@ public class AbstractWizard {
     adjustButtonState();
   }
 
-  private void nextPage() {
-    assert myCurrentPage + 1 < myPages.size() : "It is a bug: we have no next page while Next button is enabled and has been pressed";
-    getCurrentPage().setActive(null);
-    WizardPage nextPage = myPages.get(myCurrentPage + 1);
-    if (myTitle2component.get(nextPage.getTitle()) == null) {
-      addPageComponent(nextPage);
-    }
-    myCurrentPage++;
-    nextPage.setActive(this);
-    myCardLayout.show(myPagesContainer, nextPage.getTitle());
-    myDialog.center(Centering.WINDOW);
-    myDialog.layout();
-    adjustButtonState();
-  }
-
-  private void addPageComponent(WizardPage page) {
-    if (myTitle2component.get(page.getTitle()) == null) {
-      JComponent c = wrapePageComponent(page.getTitle(), page.getComponent());
-      myPagesContainer.add(c, page.getTitle());
-      myTitle2component.put(page.getTitle(), c);
-    }
-  }
-
-  private JComponent wrapePageComponent(String title, JComponent c) {
-    JPanel pagePanel = new JPanel(new BorderLayout());
-    JComponent titlePanel = TopPanel.create(title, null);
-    pagePanel.add(titlePanel, BorderLayout.NORTH);
-    c.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-    pagePanel.add(c, BorderLayout.CENTER);
-    return pagePanel;
-  }
-
-  private void backPage() {
-    if (myCurrentPage > 0) {
-      getCurrentPage().setActive(null);
-      myCurrentPage--;
-      myCardLayout.show(myPagesContainer, getCurrentPage().getTitle());
-      getCurrentPage().setActive(this);
-    }
-    //myDialog.center(Centering.WINDOW);
-    adjustButtonState();
-  }
-
-  public void show() {
-    myCardLayout.first(myPagesContainer);
-    getCurrentPage().setActive(this);
-    adjustButtonState();
-    myDialog.center(Centering.SCREEN);
-    myDialog.show();
-  }
-
-  private void adjustButtonState() {
-    myBackAction.setEnabled(myCurrentPage > 0);
-    myNextAction.setEnabled(myCurrentPage < myPages.size() - 1);
-    myOkAction.setEnabled(canFinish());
-  }
-
+  @Override
   protected void onOkPressed() {
     myOkRunnable.run();
   }
 
+  @Override
+  protected void onCancelPressed() {}
+
+  @Override
   protected boolean canFinish() {
     return myOkRunnable != null;
   }
@@ -178,6 +69,7 @@ public class AbstractWizard {
    *
    * @param page next page
    */
+  @Override
   public void setNextPage(WizardPage page) {
     boolean isExisting = isExistingNextPage(page);
     if (!isExisting) {
@@ -202,20 +94,10 @@ public class AbstractWizard {
    *
    * @param action action to be called on OK
    */
+  @Override
   public void setOkAction(Runnable action) {
     myOkRunnable = action;
     adjustButtonState();
   }
 
-  private WizardPage getCurrentPage() {
-    return myPages.get(myCurrentPage);
-  }
-
-  public UIFacade getUIFacade() {
-    return myUIFacade;
-  }
-
-  public Dialog getDialog() {
-    return myDialog;
-  }
 }

@@ -20,9 +20,7 @@ package net.sourceforge.ganttproject.gui.projectwizard;
 
 import java.awt.BorderLayout;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Centering;
@@ -70,6 +68,8 @@ public abstract class WizardImpl extends Wizard {
     getCurrentPage().setActive(null);
     myPagesContainer.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     adjustButtonState();
+    myDialog = myUIFacade.createDialog(myPagesContainer, new Action[] { myBackAction, myNextAction, myOkAction,
+      myCancelAction }, myTitle);
     myDialog.center(Centering.SCREEN);
     myDialog.show();
   }
@@ -118,6 +118,12 @@ public abstract class WizardImpl extends Wizard {
   protected void onOkPressed() {
     getCurrentPage().setActive(null);
   }
+
+  @Override
+  public void setNextPage(WizardPage page) { }
+
+  @Override
+  public void setOkAction(Runnable action) { }
 
   @Override
   protected void onCancelPressed() {

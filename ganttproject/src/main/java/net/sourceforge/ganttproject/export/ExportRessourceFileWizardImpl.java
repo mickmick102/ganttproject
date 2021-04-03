@@ -17,8 +17,6 @@ public class ExportRessourceFileWizardImpl extends WizardImpl {
   public State myState;
   private final IGanttProject myProject;
 
-  private  Exporter ourLastSelectedExporter;
-
   public ExportRessourceFileWizardImpl(UIFacade uiFacade, IGanttProject project, String title) {
     super(uiFacade, title);
     myProject = project;

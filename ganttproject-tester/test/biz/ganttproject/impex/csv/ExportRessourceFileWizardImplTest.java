@@ -21,7 +21,7 @@ public class ExportRessourceFileWizardImplTest  extends TaskTestCase {
     TaskDefaultColumn.setLocaleApi(null);
   }
 
-  public void testGetSpreadsheetReaderCSV() throws Exception {
+  public void testExportRessources() throws Exception {
     HumanResourceManager hrManager = new HumanResourceManager(null, new CustomColumnsManager());
     IGanttProject ganttProject = new GanttProjectImpl();
 

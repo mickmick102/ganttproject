@@ -120,6 +120,12 @@ public abstract class WizardImpl extends Wizard {
   }
 
   @Override
+  public void setNextPage(WizardPage page) { }
+
+  @Override
+  public void setOkAction(Runnable action) { }
+
+  @Override
   protected void onCancelPressed() {
     getCurrentPage().setActive(null);
   }

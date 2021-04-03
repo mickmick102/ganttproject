@@ -119,7 +119,7 @@ public abstract class Wizard {
 
   protected abstract void onOkPressed();
 
-  protected  abstract  void onCancelPressed();
+  protected abstract void onCancelPressed();
 
   protected abstract boolean canFinish();
 

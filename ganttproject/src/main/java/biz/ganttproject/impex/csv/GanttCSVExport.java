@@ -195,7 +195,7 @@ public class GanttCSVExport {
           }
         }
       }
-      CSVExportKt.writeCustomPropertyValues(writer, customFields, task.getCustomValues().getCustomProperties());
+      CSVExportWriterKt.writeCustomPropertyValues(writer, customFields, task.getCustomValues().getCustomProperties());
     }
   }
 
@@ -280,7 +280,7 @@ public class GanttCSVExport {
           }
         }
       }
-      CSVExportKt.writeCustomPropertyValues(writer, customPropDefs, p.getCustomProperties());
+      CSVExportWriterKt.writeCustomPropertyValues(writer, customPropDefs, p.getCustomProperties());
     }
   }
 

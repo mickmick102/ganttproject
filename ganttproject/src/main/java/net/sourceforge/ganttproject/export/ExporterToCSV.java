@@ -21,10 +21,7 @@ package net.sourceforge.ganttproject.export;
 import biz.ganttproject.core.option.DefaultEnumerationOption;
 import biz.ganttproject.core.option.GPOption;
 import biz.ganttproject.core.option.GPOptionGroup;
-import biz.ganttproject.impex.csv.CSVExport;
-import biz.ganttproject.impex.csv.GanttCSVExport;
-import biz.ganttproject.impex.csv.SpreadsheetFormat;
-import biz.ganttproject.impex.csv.SpreadsheetWriter;
+import biz.ganttproject.impex.csv.*;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.io.CSVOptions;
@@ -102,7 +99,7 @@ public class ExporterToCSV extends ExporterBase {
           CSVOptions csvOptions = ((GanttProject) getProject()).getGanttOptions().getCSVOptions();
 
           // TODO Fix this ugly hack!! Ie make the settings available in a proper way
-          CSVExport exporter = new GanttCSVExport(getProject(), csvOptions);
+          CSVExport exporter = CSVExportFactory.INSTANCE.getCVSExport("GanttCSVExport", getProject(), csvOptions);
           try (SpreadsheetWriter writer = exporter.createWriter(outputStream, myFormatOption.getSelectedValue())) {
             exporter.save(writer);
           }

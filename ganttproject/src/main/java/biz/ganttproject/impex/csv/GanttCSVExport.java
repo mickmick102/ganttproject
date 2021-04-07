@@ -18,25 +18,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package biz.ganttproject.impex.csv;
 
-import biz.ganttproject.app.InternationalizationKt;
 import biz.ganttproject.core.model.task.TaskDefaultColumn;
 import biz.ganttproject.core.option.BooleanOption;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.io.CSVOptions;
-import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
@@ -44,58 +38,44 @@ import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskProperties;
 import net.sourceforge.ganttproject.util.ColorConvertion;
 import net.sourceforge.ganttproject.util.StringUtils;
-import org.apache.commons.csv.CSVFormat;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Class to export the project in CSV text format
  *
  * @author athomas
  */
-public class GanttCSVExport {
-  private static final Predicate<ResourceAssignment> COORDINATOR_PREDICATE = arg -> arg.isCoordinator();
+public class GanttCSVExport extends CSVExport {
 
-
-  private CSVOptions myCsvOptions;
   private final TaskManager myTaskManager;
   private final CustomPropertyManager myTaskCustomPropertyManager;
-  private final HumanResourceManager myHumanResourceManager;
-  private final CustomPropertyManager myHumanResourceCustomPropertyManager;
-  private final RoleManager myRoleManager;
+  private final ResourceCSVExport resourceCSVExport;
 
   public GanttCSVExport(IGanttProject project, CSVOptions csvOptions) {
     this(project.getTaskManager(), project.getHumanResourceManager(), project.getRoleManager(), csvOptions);
   }
 
   GanttCSVExport(TaskManager taskManager, HumanResourceManager resourceManager, RoleManager roleManager, CSVOptions csvOptions) {
+    super(csvOptions);
     myTaskManager = Preconditions.checkNotNull(taskManager);
     myTaskCustomPropertyManager = Preconditions.checkNotNull(taskManager.getCustomPropertyManager());
-    myHumanResourceManager = Preconditions.checkNotNull(resourceManager);
-    myHumanResourceCustomPropertyManager = Preconditions.checkNotNull(resourceManager.getCustomPropertyManager());
-    myRoleManager = Preconditions.checkNotNull(roleManager);
-    myCsvOptions = Preconditions.checkNotNull(csvOptions);
+    resourceCSVExport = new ResourceCSVExport(resourceManager, roleManager, csvOptions);
   }
 
 
-
-  public SpreadsheetWriter createWriter(OutputStream stream, SpreadsheetFormat format) throws IOException {
-    return SpreadsheetWriterFactory.Companion.getSpreadsheetWriter(stream,format,myCsvOptions);
-  }
-
+  @Override
   public void save(SpreadsheetWriter writer) throws IOException {
     writeTasks(writer);
 
-    if (myHumanResourceManager.getResources().size() > 0) {
+    if (resourceCSVExport.getMyHumanResourceManager().getResources().size() > 0) {
       writer.println();
       writer.println();
-      writeResources(writer);
+      resourceCSVExport.save(writer);
     }
   }
 
@@ -120,10 +100,6 @@ public class GanttCSVExport {
     }
     writer.println();
     return defs;
-  }
-
-  private String i18n(String key) {
-    return InternationalizationKt.getRootLocalizer().formatText(key);
   }
 
   private void writeTasks(SpreadsheetWriter writer) throws IOException {
@@ -195,105 +171,8 @@ public class GanttCSVExport {
           }
         }
       }
-      CSVExportKt.writeCustomPropertyValues(writer, customFields, task.getCustomValues().getCustomProperties());
+      CSVExportWriterKt.writeCustomPropertyValues(writer, customFields, task.getCustomValues().getCustomProperties());
     }
-  }
-
-  private List<CustomPropertyDefinition> writeResourceHeaders(SpreadsheetWriter writer) throws IOException {
-    for (Map.Entry<String, BooleanOption> entry : myCsvOptions.getResourceOptions().entrySet()) {
-      ResourceDefaultColumn defaultColumn = ResourceDefaultColumn.find(entry.getKey());
-      if (!entry.getValue().isChecked()) {
-        continue;
-      }
-      if (defaultColumn == ResourceDefaultColumn.ROLE_IN_TASK) {
-        // There's not too much sense in exporting role in task not in the assignment context.
-        continue;
-      }
-      if (defaultColumn == null) {
-        if ("id".equals(entry.getKey())) {
-          writer.print(i18n("tableColID"));
-        } else {
-          writer.print(i18n(entry.getKey()));
-        }
-      } else {
-        writer.print(defaultColumn.getName());
-      }
-    }
-    List<CustomPropertyDefinition> customFieldDefs = myHumanResourceCustomPropertyManager.getDefinitions();
-    for (CustomPropertyDefinition nextDef : customFieldDefs) {
-      writer.print(nextDef.getName());
-    }
-    writer.println();
-    return customFieldDefs;
-  }
-
-  private void writeResources(SpreadsheetWriter writer) throws IOException {
-    Set<Role> projectRoles = Sets.newHashSet(myRoleManager.getProjectLevelRoles());
-    List<CustomPropertyDefinition> customPropDefs = writeResourceHeaders(writer);
-    // parse all resources
-    for (HumanResource p : myHumanResourceManager.getResources()) {
-      for (Map.Entry<String, BooleanOption> entry : myCsvOptions.getResourceOptions().entrySet()) {
-        if (!entry.getValue().isChecked()) {
-          continue;
-        }
-        ResourceDefaultColumn defaultColumn = ResourceDefaultColumn.find(entry.getKey());
-        if (defaultColumn == null) {
-          if ("id".equals(entry.getKey())) {
-            writer.print(p.getId());
-            continue;
-          }
-        } else {
-          switch (defaultColumn) {
-            case NAME:
-              writer.print(p.getName());
-              break;
-            case EMAIL:
-              writer.print(p.getMail());
-              break;
-            case PHONE:
-              writer.print(p.getPhone());
-              break;
-            case ROLE:
-              Role role = p.getRole();
-              final String sRoleID;
-              if (role == null) {
-                sRoleID = "0";
-              } else if (projectRoles.contains(role)) {
-                sRoleID = role.getName();
-              } else {
-                sRoleID = role.getPersistentID();
-              }
-              writer.print(sRoleID);
-              break;
-            case ROLE_IN_TASK:
-              // There's not too much sense in exporting role in task not in the assignment context.
-              break;
-            case STANDARD_RATE:
-              writer.print(p.getStandardPayRate());
-              break;
-            case TOTAL_COST:
-              writer.print(p.getTotalCost());
-              break;
-            case TOTAL_LOAD:
-              writer.print(p.getTotalLoad());
-              break;
-          }
-        }
-      }
-      CSVExportKt.writeCustomPropertyValues(writer, customPropDefs, p.getCustomProperties());
-    }
-  }
-
-
-  /**
-   * @return the name of task with the correct level.
-   */
-  private String getName(Task task) {
-    if (myCsvOptions.bFixedSize) {
-      return task.getName();
-    }
-    int depth = task.getManager().getTaskHierarchy().getDepth(task) - 1;
-    return StringUtils.padLeft(task.getName(), depth * 2);
   }
 
   /**
@@ -311,8 +190,8 @@ public class GanttCSVExport {
     ResourceAssignment[] assignment = task.getAssignments();
     for (int i = 0; i < assignment.length; i++) {
       String assignmentDelimiter = i == assignment.length - 1
-              ? ""
-              : myCsvOptions.sSeparatedChar.equals(";") ? "," : ";";
+        ? ""
+        : myCsvOptions.sSeparatedChar.equals(";") ? "," : ";";
       res.append(assignment[i].getResource()).append(assignmentDelimiter);
     }
     return res.toString();
@@ -326,5 +205,14 @@ public class GanttCSVExport {
     return Joiner.on(';').join(loads);
   }
 
-
+  /**
+   * @return the name of task with the correct level.
+   */
+  protected String getName(Task task) {
+    if (myCsvOptions.bFixedSize) {
+      return task.getName();
+    }
+    int depth = task.getManager().getTaskHierarchy().getDepth(task) - 1;
+    return StringUtils.padLeft(task.getName(), depth * 2);
+  }
 }

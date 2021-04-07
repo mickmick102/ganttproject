@@ -46,11 +46,11 @@ public class GPCsvExportTest extends TaskTestCase {
     RoleManager roleManager = new RoleManagerImpl();
     CSVOptions csvOptions = enableOnly("id");
     CustomPropertyDefinition prop1 = hrManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop1", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop1", null);
     CustomPropertyDefinition prop2 = hrManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop2", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop2", null);
     CustomPropertyDefinition prop3 = hrManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop3", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop3", null);
     hrManager.create("HR1", 1);
     hrManager.create("HR2", 2);
     hrManager.create("HR3", 3);
@@ -59,7 +59,7 @@ public class GPCsvExportTest extends TaskTestCase {
     hrManager.getById(2).addCustomProperty(prop2, "2");
     hrManager.getById(3).addCustomProperty(prop1, "3");
 
-    GanttCSVExport exporter = new GanttCSVExport(taskManager, hrManager, roleManager, csvOptions);
+    CSVExport exporter = new GanttCSVExport(taskManager, hrManager, roleManager, csvOptions);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     try (SpreadsheetWriter writer = exporter.createWriter(outputStream, CSV)) {
       exporter.save(writer);
@@ -79,11 +79,11 @@ public class GPCsvExportTest extends TaskTestCase {
     CSVOptions csvOptions = enableOnly(TaskDefaultColumn.ID.getStub().getID());
 
     CustomPropertyDefinition prop1 = taskManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop1", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop1", null);
     CustomPropertyDefinition prop2 = taskManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop2", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop2", null);
     CustomPropertyDefinition prop3 = taskManager.getCustomPropertyManager().createDefinition(
-        CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop3", null);
+      CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop3", null);
     Task task1 = createTask();
     Task task2 = createTask();
     Task task3 = createTask();
@@ -91,7 +91,7 @@ public class GPCsvExportTest extends TaskTestCase {
     task2.getCustomValues().addCustomProperty(prop2, "b");
     task3.getCustomValues().addCustomProperty(prop1, "c");
 
-    GanttCSVExport exporter = new GanttCSVExport(taskManager, hrManager, roleManager, csvOptions);
+    CSVExport exporter = new GanttCSVExport(taskManager, hrManager, roleManager, csvOptions);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     try (SpreadsheetWriter writer = exporter.createWriter(outputStream, CSV)) {
       exporter.save(writer);
@@ -122,7 +122,7 @@ public class GPCsvExportTest extends TaskTestCase {
     task2.getAssignmentCollection().addAssignment(bob);
 
     Callable<String[]> exportJob = () -> {
-      GanttCSVExport exporter = new GanttCSVExport(taskManager, hrManager, new RoleManagerImpl(), csvOptions);
+      CSVExport exporter = new GanttCSVExport(taskManager, hrManager, new RoleManagerImpl(), csvOptions);
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       try (SpreadsheetWriter writer = new CsvWriterImpl(outputStream, CSVFormat.DEFAULT)) {
         exporter.save(writer);
@@ -157,11 +157,11 @@ public class GPCsvExportTest extends TaskTestCase {
     // Leave task3 color default
 
     CSVOptions csvOptions = enableOnly(TaskDefaultColumn.ID.getStub().getID(), TaskDefaultColumn.COLOR.getStub().getID());
-    GanttCSVExport exporter = new GanttCSVExport(
-        taskManager,
-        new HumanResourceManager(null, new CustomColumnsManager()),
-        new RoleManagerImpl(),
-        csvOptions
+    CSVExport exporter = new GanttCSVExport(
+      taskManager,
+      new HumanResourceManager(null, new CustomColumnsManager()),
+      new RoleManagerImpl(),
+      csvOptions
     );
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     try (SpreadsheetWriter writer = new CsvWriterImpl(outputStream, CSVFormat.DEFAULT)) {
@@ -180,14 +180,14 @@ public class GPCsvExportTest extends TaskTestCase {
     TaskManager taskManager = getTaskManager();
     GanttTask task = taskManager.createTask();
     CSVOptions csvOptions = enableOnly(
-        TaskDefaultColumn.NAME.getStub().getID());
+      TaskDefaultColumn.NAME.getStub().getID());
     csvOptions.getBomOption().setValue(true);
     {
-      GanttCSVExport exporter = new GanttCSVExport(
-          taskManager,
-          new HumanResourceManager(null, new CustomColumnsManager()),
-          new RoleManagerImpl(),
-          csvOptions
+      CSVExport exporter = new GanttCSVExport(
+        taskManager,
+        new HumanResourceManager(null, new CustomColumnsManager()),
+        new RoleManagerImpl(),
+        csvOptions
       );
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       try (SpreadsheetWriter writer = new CsvWriterImpl(outputStream, CSVFormat.DEFAULT, true)) {
@@ -202,11 +202,11 @@ public class GPCsvExportTest extends TaskTestCase {
     }
     csvOptions.getBomOption().setValue(false);
     {
-      GanttCSVExport exporter = new GanttCSVExport(
-          taskManager,
-          new HumanResourceManager(null, new CustomColumnsManager()),
-          new RoleManagerImpl(),
-          csvOptions
+      CSVExport exporter = new GanttCSVExport(
+        taskManager,
+        new HumanResourceManager(null, new CustomColumnsManager()),
+        new RoleManagerImpl(),
+        csvOptions
       );
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       try (SpreadsheetWriter writer = new CsvWriterImpl(outputStream, CSVFormat.DEFAULT)) {

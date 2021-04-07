@@ -1,17 +1,12 @@
 package biz.ganttproject.impex.csv;
 
 import biz.ganttproject.core.model.task.TaskDefaultColumn;
-import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.GanttProjectImpl;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.export.ExportRessourceFileWizardImpl;
-import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.io.CSVOptions;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
-import net.sourceforge.ganttproject.task.Task;
-import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.test.task.TaskTestCase;
 
 public class ExportRessourceFileWizardImplTest  extends TaskTestCase {

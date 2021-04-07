@@ -42,6 +42,8 @@ public class ResourceActionSet {
 
   private final AssignmentDeleteAction myAssignmentDelete;
 
+  private final ResourceExportAction myResourceExportAction;
+
   private AbstractAction[] myActions;
 
   public ResourceActionSet(ResourceContext resourceContext, AssignmentContext assignmentContext,
@@ -53,7 +55,9 @@ public class ResourceActionSet {
     myResourceMoveUpAction = new ResourceMoveUpAction(table);
     myResourceMoveDownAction = new ResourceMoveDownAction(table);
     myResourceSendMailAction = new ResourceSendMailAction(table);
+    myResourceExportAction = new ResourceExportAction(uiFacade, projectFrame, projectFrame.getGanttOptions().getPluginPreferences(), manager);
     myAssignmentDelete = new AssignmentDeleteAction(assignmentContext, uiFacade);
+
   }
 
   public AbstractAction[] getActions() {
@@ -61,6 +65,7 @@ public class ResourceActionSet {
       myResourceNewAction.putValue(Action.SHORT_DESCRIPTION, null);
       myResourcePropertiesAction.putValue(Action.SHORT_DESCRIPTION, null);
       myResourceSendMailAction.putValue(Action.SHORT_DESCRIPTION, null);
+      myResourceExportAction.putValue(Action.SHORT_DESCRIPTION, null);
       myActions = new AbstractAction[] { myResourceNewAction, myResourcePropertiesAction };
     }
     return myActions;
